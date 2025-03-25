@@ -7,8 +7,6 @@
 #include <ctime>   // for time
 using namespace std;
 
-//Check Playlist.cpp for instructions of what to write here and how to test it
-
 
 	DLL::DLL(){  // constructor - initializes an empty list
 		last = NULL;
@@ -155,61 +153,19 @@ using namespace std;
 
 	}
 	void DLL::makeRandom() {
-		if (numSongs <= 1) return;  // No need to shuffle if there's 0 or 1 song.
+		int counter = numSongs;
+		DNode *curr = first;
+		while (curr != nullptr) {
 
-		DNode* newFirst = nullptr;  // New shuffled list head
-		DNode* newLast = nullptr;   // New shuffled list tail
-
-		while (numSongs > 0) {
-			int randomIndex = rand() % numSongs;  // Pick a random index
-
-			DNode* selected = first;
-			DNode* prev = nullptr;
-
-			// Traverse to the randomly chosen node
-			for (int i = 0; i < randomIndex; i++) {
-				prev = selected;
-				selected = selected->next;
+			while (counter > 0) {
+				int j = rand() % counter;
+					for (int i = 0; i < j; i++) {
+						moveDown(curr->song->title);
+					}
+				counter--;
+				curr = curr->next;
 			}
 
-			// Remove selected node from the original list
-			if (prev == nullptr) {  // If selecting first node
-				first = first->next;
-				if (first) first->prev = nullptr;
-			} else {
-				prev->next = selected->next;
-				if (selected->next) {
-					selected->next->prev = prev;
-				}
-			}
-
-			if (selected == last) {
-				last = prev;  // Update last if needed
-			}
-
-			numSongs--;
-
-			// Add selected node to the new shuffled list
-			selected->next = nullptr;
-			selected->prev = newLast;
-			if (newLast) {
-				newLast->next = selected;
-			} else {
-				newFirst = selected;  // First node in the new list
-			}
-			newLast = selected;
-		}
-
-		// Update first and last pointers
-		first = newFirst;
-		last = newLast;
-		numSongs = 0; // Reset counter, then recount
-
-		// Count nodes to update numSongs correctly
-		DNode* temp = first;
-		while (temp) {
-			numSongs++;
-			temp = temp->next;
 		}
 	}
 
