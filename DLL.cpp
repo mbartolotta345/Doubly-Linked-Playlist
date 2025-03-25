@@ -3,6 +3,8 @@
 #include "DLL.hpp"
 #include <iostream>
 #include <stdlib.h>
+#include <cstdlib> // for srand, rand
+#include <ctime>   // for time
 using namespace std;
 
 //Check Playlist.cpp for instructions of what to write here and how to test it
@@ -12,6 +14,7 @@ using namespace std;
 		last = NULL;
 		first = NULL;
 		numSongs = 0;
+		srand(time(0));
 	}
 	DLL::DLL(string t, string l, int m, int s){  // constructor, initializes a list with one new node with data x
 		DNode *n = new DNode (t,l,m,s);
@@ -152,34 +155,64 @@ using namespace std;
 
 	}
 	void DLL::makeRandom() {
-		int count = 0;
-		DNode *curr = first;
-		//get number of things in list
-		while (curr) {
-			count++;
-			curr = curr->next;
+		if (numSongs <= 1) return;  // No need to shuffle if there's 0 or 1 song.
+
+		DNode* newFirst = nullptr;  // New shuffled list head
+		DNode* newLast = nullptr;   // New shuffled list tail
+
+		while (numSongs > 0) {
+			int randomIndex = rand() % numSongs;  // Pick a random index
+
+			DNode* selected = first;
+			DNode* prev = nullptr;
+
+			// Traverse to the randomly chosen node
+			for (int i = 0; i < randomIndex; i++) {
+				prev = selected;
+				selected = selected->next;
+			}
+
+			// Remove selected node from the original list
+			if (prev == nullptr) {  // If selecting first node
+				first = first->next;
+				if (first) first->prev = nullptr;
+			} else {
+				prev->next = selected->next;
+				if (selected->next) {
+					selected->next->prev = prev;
+				}
+			}
+
+			if (selected == last) {
+				last = prev;  // Update last if needed
+			}
+
+			numSongs--;
+
+			// Add selected node to the new shuffled list
+			selected->next = nullptr;
+			selected->prev = newLast;
+			if (newLast) {
+				newLast->next = selected;
+			} else {
+				newFirst = selected;  // First node in the new list
+			}
+			newLast = selected;
 		}
 
-		//random what index to use
-		srand(time(0));
-		int randIndex = rand() % count;
+		// Update first and last pointers
+		first = newFirst;
+		last = newLast;
+		numSongs = 0; // Reset counter, then recount
 
-		curr = first;
-		for (int i = 0; i < randIndex; i++) {
-			curr = curr->next;
+		// Count nodes to update numSongs correctly
+		DNode* temp = first;
+		while (temp) {
+			numSongs++;
+			temp = temp->next;
 		}
+	}
 
-		int direction = rand() % 2; // 0 for moveUp, 1 for moveDown
-
-		//move up or down randomly
-		if (direction == 0 && curr->prev != nullptr) {
-			moveUp(curr->song->title);
-		} else if (direction == 1 && curr->next != nullptr) {
-			moveDown(curr->song->title);
-		}
-
-
-		}
 
 	int DLL::remove(string s) {
 		// note that the int returned is the index - this is standard for a remove, but we won't be using it.
