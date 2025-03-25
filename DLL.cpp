@@ -60,6 +60,7 @@ using namespace std;
 		Song *ret = last->song;
 		last->prev->next = nullptr;
 		last = last->prev;
+		numSongs--;
 		return ret;
 	}
 
@@ -155,18 +156,16 @@ using namespace std;
 	void DLL::makeRandom() {
 		int counter = numSongs;
 		DNode *curr = first;
-		while (curr != nullptr) {
 
 			while (counter > 0) {
-				int j = rand() % counter;
+				int j = rand() % 50;
 					for (int i = 0; i < j; i++) {
 						moveDown(curr->song->title);
 					}
 				counter--;
 				curr = curr->next;
 			}
-
-		}
+		
 	}
 
 
